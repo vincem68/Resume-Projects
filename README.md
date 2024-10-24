@@ -1,6 +1,6 @@
 This repository contains a few of the projects I worked on that are included in my resume. The projects are as follows:
 
-213Project4 - The Pizza Customizer and Ordering Application
+Pizza-Ordering-GUI - The Pizza Customizer and Ordering Application
 
 cs336TrainScheduler_24 - The Train Website Project
 
