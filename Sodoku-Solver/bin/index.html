@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <title>Sodoku Solver</title>
+        <link rel = "stylesheet" href = "/styles/styles.css">
+    </head>
+
+    <body>
+        <div id = 'titleDiv'>
+            <h1>Welcome to my Sodoku Solver!</h1>
+        </div>
+
+        <!--This is where our instructions will go-->
+        <div id = 'subtitle'>
+            <h4>Here's how this works:</h4>
+            <br>
+            <div id = 'instructionsDiv'>
+                <p id = 'instructions'>
+                    This Solver takes two kinds of inputs: either the numbers are entered in manually<br>
+                    or a file in inputted to the Solver. If entering in manually, use the drop downs<br>
+                    to select a number for the desired space. Of course, for a valid Sodoku, you must<br>
+                    bear in mind these rules:
+                </p>
+                <div id = 'rulesDiv'>
+                    <ol type = "1">
+                        <li>No duplicate numbers in a row</li>
+                        <li>No duplicate numbers in a column</li>
+                        <li>No duplicate numbers in a box</li>
+                        <li>For a valid Sodoku puzzle, there must be at least 17 filled spaces to start</li>
+                    </ol>
+                </div>
+                <div id = 'endExplanationDiv'>
+                    <p>Well, that's the long and short of it. Good luck!</p>
+                </div>
+            </div>
+            <div id = 'rulesDiv'>
+
+            </div>
+        </div>
+
+        <!--The Sodoku grid will go down here-->
+        <div id = 'gridDiv'>
+            
+        </div>
+
+        <!--This is where our inputs will be. We'll have a button for the inputted numbers and
+        a button for uploading the file.-->
+        <div id = 'inputDiv'>
+            <label for = 'sodokuFile'>Input a Sodoku puzzle file here:</label>
+            <input type = 'file' id = 'sodokuFile' name = 'sodokuFile'>
+            <input type = 'button' id = 'submitFile' name = 'submitFile'>
+        </div>
+
+        <script src = 'site_functions.js'></script>
+    </body>
+</html>
