@@ -21,11 +21,11 @@ class Components {
     box20 = document.getElementById('box20');
     box21 = document.getElementById('box21');
     box22 = document.getElementById('box22');
-    var box23 = document.getElementById('box23');
-    var box24 = document.getElementById('box24');
-    var box25 = document.getElementById('box25');
-    var box26 = document.getElementById('box26');
-    var box27 = document.getElementById('box27');
+    box23 = document.getElementById('box23');
+    box24 = document.getElementById('box24');
+    box25 = document.getElementById('box25');
+    box26 = document.getElementById('box26');
+    box27 = document.getElementById('box27');
     var box28 = document.getElementById('box28');
     var box29 = document.getElementById('box29');
     var box30 = document.getElementById('box30');

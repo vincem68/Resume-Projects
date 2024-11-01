@@ -8,8 +8,11 @@
     </head>
 
     <body>
+
         <p id = 'test'></p>
-        <!--
+
+        
+
         <div id = 'titleDiv'>
             <h1>Welcome to my Sodoku Solver!</h1>
         </div>
@@ -17,7 +20,6 @@
        
         <div id = 'subtitle'>
             <h4>Here's how this works:</h4>
-            <br>
             <div id = 'instructionsDiv'>
                 <p id = 'instructions'>
                     This Solver takes two kinds of inputs: either the numbers are entered in manually<br>
@@ -42,20 +44,27 @@
             </div>
         </div>
 
-        The Sodoku grid will go down here
+        <!-- The Sodoku grid will go down here -->
         <div id = 'gridDiv'>
-            
+            <div class = 'rowDiv'></div>
+            <div class = 'rowDiv'></div>
+            <div class = 'rowDiv'></div>
+            <div class = 'rowDiv'></div>
+            <div class = 'rowDiv'></div>
+            <div class = 'rowDiv'></div>
+            <div class = 'rowDiv'></div>
+            <div class = 'rowDiv'></div>
+            <div class = 'rowDiv'></div>
         </div>
 
-        <This is where our inputs will be. We'll have a button for the inputted numbers and
-        a button for uploading the file.
+        <!-- This is where our inputs will be. We'll have a button for the inputted numbers and
+        a button for uploading the file. -->
         <div id = 'inputDiv'>
             <label for = 'sodokuFile'>Input a Sodoku puzzle file here:</label>
             <input type = 'file' id = 'sodokuFile' name = 'sodokuFile'>
             <input type = 'button' id = 'submitFile' name = 'submitFile'>
         </div>
 
-    -->
-        <script type = 'module' src = 'testing/solve_testing_script.js'></script>
+        <script type = 'module' src = 'src/site_functions.js'></script>
     </body>
 </html>
