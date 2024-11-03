@@ -1,3 +1,5 @@
+import solve from './Solve.js';
+
 /**
  * This function will be about creating the div elements to represent the boxes as well as setting up the
  * selectors inside each box
@@ -5,54 +7,50 @@
 window.onload = function() {
 
     //get all the rows
-    const rows = document.querySelectorAll('.rowDiv');
+    const rows = document.querySelectorAll('.row');
 
     //start creating the 9 boxes for each row
     rows.forEach(row => {
         for (let i = 0; i < 9; i++){
             const box = document.createElement('div');
-            box.classList.add('boxDiv');
+            box.classList.add('col-1');
+            box.classList.add('p-2');
+            box.classList.add('box');
             row.appendChild(box);
         }
     });
 
-    //create the list of possible combos for a box selector
-    const options = [
-        { value: 0, text: ' '},
-        { value: 1, text: '1'},
-        { value: 2, text: '2'},
-        { value: 3, text: '3'},
-        { value: 4, text: '4'},
-        { value: 5, text: '5'},
-        { value: 6, text: '6'},
-        { value: 7, text: '7'},
-        { value: 8, text: '8'}, 
-        { value: 9, text: '9'},
-    ];
-
     //get all the boxes
-    const boxes = document.querySelectorAll('.boxDiv');
+    const boxes = document.querySelectorAll('.box');
 
     //start creating the lists and adding one to each box
     boxes.forEach(box => {
-        const list = document.createElement('select');
-        options.forEach(option => {
-            const opt = document.createElement('option');
-            opt.value = option.value;
-            opt.text = option.text;
-            list.appendChild(opt);
-            if (opt.value == 0){
-                opt.selected = true;
-            } 
-        });
+
+        //create the input for each box. Only numbers 0-9
+        const list = document.createElement('input');
+        list.type = 'number';
+        list.min = 0;
+        list.max = 9;
+        list.step = 1;
+        list.value = 0;
+        list.hidden = true;
         box.appendChild(list);
+        const numParagraph = document.createElement('p');
+        numParagraph.innerHTML = ' ';
+        box.appendChild(numParagraph);
+
+        //add the event listeners
+        box.addEventListener('mouseenter', boxInFocus);
+        box.addEventListener('mouseleave', boxOutOfFocus);
+        list.addEventListener('change', addNumberToGrid);
     });
     
 }
 
-const sodokuFileButton = document.getElementById('sodokuFile');
-const fileSubmitButton = document.getElementById('submitFile');
-
+/**
+ * This is where all the main button will be placed. Events are tied to them here
+ */
+document.getElementById('resetButton').addEventListener('click', clearBoard);
 
 //a global object that represents the sodoku grid. Initially starts out with all empty spaces
 const grid = [
@@ -67,15 +65,17 @@ const grid = [
     [0,0,0,0,0,0,0,0,0]
 ];
 
+//this number will be used to keep track of how many spaces in the grid have been filled
+let spacesFilled = 0;
+
 
 /**
- * This function is used when the box is clicked on and brought into focus. It makes the selector inside
- * the box appear to pick a number.
+ * This function is used when the box is clicked on and brought into focus. It makes the form inside
+ * the box appear to pick a number. It also hides the text value.
  */
 function boxInFocus(){
-
-    //the selector is now viewable
-    this.firstChild.hidden = false;
+    this.childNodes[0].hidden = false;
+    this.childNodes[1].hidden = true;
 }
 
 
@@ -86,7 +86,8 @@ function boxInFocus(){
 function boxOutOfFocus(){
 
     //selector is now hidden
-    this.firstChild.hidden = true;
+    this.childNodes[0].hidden = true;
+    this.childNodes[1].hidden = false;
 }
 
 /**
@@ -97,7 +98,14 @@ function addNumberToGrid(){
     //the row of the box, and the box itself, gotten by the DOM tree
     const row = this.parentNode.parentNode;
     const box = this.parentNode;
+    const num = box.childNodes[1];
 
+    num.innerHTML = this.value;
+
+    //change the box's displayed number based on the selected number from the drop down
+    //box.childNodes[1].innerHTML = box.childNodes[0].options[box.childNodes[0].selectedIndex].text;
+
+    /*
     let rowIndex = -1; let boxIndex = -1;
 
     const rowsList = document.querySelectorAll('.rowDiv');
@@ -121,6 +129,7 @@ function addNumberToGrid(){
 
     //use validateSpace() to check if entered number is valid
     validateSpace(rowIndex, boxIndex, this.value);
+    */
 }
 
 /**
@@ -147,5 +156,31 @@ function validateSpace(rowIndex, boxIndex, num){
     
 
     //check if the inputted number is already in the box
+}
+
+function solveGrid(){
+
+    //call solve() from Solve.js and fill up the array
+    solve(grid);
+
+}
+
+/**
+ * This function will clear the board, resetting it. Called when the user hits the clear board button
+ */
+function clearBoard(){
+
+    //get all the boxes and have the empty space as their selected options
+    const boxes = document.querySelectorAll('.box');
+    boxes.forEach(box => {
+        box.firstChild.selectedIndex = 0;
+    });
+
+    //get the global grid array and set all values to 0
+    for (let i = 0; i < 9; i++){
+        for (let j = 0; j < 9; j++){
+            grid[i][j] = 0;
+        }
+    }
 }
 

@@ -2,16 +2,30 @@
     text-align: center;
 }
 
-#gridDiv {
-    border-color: black;
-    border-style: solid;
+.container {
+    align-items: center;
 }
 
-.boxDiv {
+.box {
     color: white;
     border-style: solid;
     border-color: black;
-    width: 50px;
+    width: 60px;
     height: 50px;
-    display: inline-block;
+    display: inline-flex;
+    margin: 0;
+}
+
+input {
+    position: absolute;
+}
+
+.horizontal {
+    border-bottom-width: 50px;
+    border-bottom-color: black;
+}
+
+.vertical {
+    border-right-width: thick;
+    border-right-color: black;
 }
