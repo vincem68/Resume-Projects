@@ -53,6 +53,7 @@ window.onload = function() {
  * This is where all the main button will be placed. Events are tied to them here
  */
 document.getElementById('resetButton').addEventListener('click', clearBoard);
+document.getElementById('solveButton').addEventListener('click', solveGrid);
 
 //a global object that represents the sodoku grid. Initially starts out with all empty spaces
 const grid = [
@@ -100,21 +101,21 @@ function boxOutOfFocus(){
  */
 function addNumberToGrid(){
 
-    //the row of the box, and the box itself, gotten by the DOM tree
+    //get the row of the box, and the box itself, gotten by the DOM tree, update the box text
     this.nextSibling.textContent = this.value == 0 ? " " : this.value;
+    const box = this.parentNode;
+    const row = box.parentNode;
 
-    //change the box's displayed number based on the selected number from the drop down
-    //box.childNodes[1].innerHTML = box.childNodes[0].options[box.childNodes[0].selectedIndex].text;
-
-    /*
+    
     let rowIndex = -1; let boxIndex = -1;
 
-    const rowsList = document.querySelectorAll('.rowDiv');
+    const rowsList = document.querySelectorAll('.row');
 
     //get the index of the row
     for (let i = 0; i < 9; i++){
         if (row === rowsList[i]){
             rowIndex = i;
+            break;
         }
     }
 
@@ -122,15 +123,16 @@ function addNumberToGrid(){
     for (let i = 0; i < 9; i++){
         if (box === row.childNodes[i]){
             boxIndex = i;
+            break;
         }
     }
 
     //update the grid
-    grid[rowIndex][boxIndex] = this.value;
+    grid[rowIndex][boxIndex] = Number(this.value);
 
     //use validateSpace() to check if entered number is valid
-    validateSpace(rowIndex, boxIndex, this.value);
-    */
+    //validateSpace(rowIndex, boxIndex, this.value);
+    
 }
 
 /**
@@ -152,6 +154,7 @@ function validateSpace(rowIndex, boxIndex, num){
     if (grid[rowIndex].includes(num)){
         //make the other boxes/numbers that share it red
         alert("The number inputted is already in the row. Please choose a different number.");
+
     }
     
     //check if the inputted number is already in the column
@@ -160,12 +163,20 @@ function validateSpace(rowIndex, boxIndex, num){
     //check if the inputted number is already in the box
 }
 
+
+/**
+ * First checks to see if the current puzzle is valid. If not, sends an alert and exits.
+ * If so, calls solve() from Solve.js on the current 2D array and populates the missing spaces.
+ * Populates the displayed grid with the corresponding numbers as well.
+ * @returns nothing
+ */
 function solveGrid(){
 
+    /*
     if (!notValidSodoku){
         alert("The puzzle you entered is not valid. Please make changes.");
         return;
-    }
+    } */
 
     //call solve() from Solve.js and fill up the array
     solve(grid);
@@ -175,14 +186,15 @@ function solveGrid(){
     for (let i = 0; i < 9; i++){
         for (let j = 0; j < 9; j++){
             rows[i].childNodes[j].childNodes[0].value = grid[i][j];
-            rows[i].childNodes[j].childNodes[1].innerHTML = grid[i][j];
+            rows[i].childNodes[j].childNodes[1].textContent = grid[i][j];
         }
     }
 
 }
 
 /**
- * This function will clear the board, resetting it. Called when the user hits the clear board button
+ * This function will clear the board, resetting it. Called when the user hits the clear board button.
+ * Display will make all spaces empty and the global array grid will all contain 0s
  */
 function clearBoard(){
 
