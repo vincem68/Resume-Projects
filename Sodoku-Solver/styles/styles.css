@@ -16,9 +16,6 @@
     margin: 0;
 }
 
-input {
-    position: absolute;
-}
 
 .horizontal {
     border-bottom-width: 50px;
@@ -28,4 +25,10 @@ input {
 .vertical {
     border-right-width: thick;
     border-right-color: black;
+}
+
+p {
+    text-align: center;
+    display: inline;
+    color: black;
 }

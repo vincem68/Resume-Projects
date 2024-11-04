@@ -33,16 +33,18 @@ window.onload = function() {
         list.max = 9;
         list.step = 1;
         list.value = 0;
-        list.hidden = true;
+        //list.hidden = true;
+        list.style.display = 'none';
         box.appendChild(list);
         const numParagraph = document.createElement('p');
-        numParagraph.innerHTML = ' ';
+        numParagraph.textContent = " ";
+        //numParagraph.style.display = 'inline';
         box.appendChild(numParagraph);
 
         //add the event listeners
         box.addEventListener('mouseenter', boxInFocus);
         box.addEventListener('mouseleave', boxOutOfFocus);
-        list.addEventListener('change', addNumberToGrid);
+        list.addEventListener('input', addNumberToGrid);
     });
     
 }
@@ -68,14 +70,17 @@ const grid = [
 //this number will be used to keep track of how many spaces in the grid have been filled
 let spacesFilled = 0;
 
+//let notValidSodoku = false;
+
 
 /**
  * This function is used when the box is clicked on and brought into focus. It makes the form inside
  * the box appear to pick a number. It also hides the text value.
  */
 function boxInFocus(){
-    this.childNodes[0].hidden = false;
-    this.childNodes[1].hidden = true;
+
+    this.childNodes[0].style.display = 'inline';
+    this.childNodes[1].style.display = 'none';
 }
 
 
@@ -86,8 +91,8 @@ function boxInFocus(){
 function boxOutOfFocus(){
 
     //selector is now hidden
-    this.childNodes[0].hidden = true;
-    this.childNodes[1].hidden = false;
+    this.childNodes[0].style.display = 'none';
+    this.childNodes[1].style.display = 'inline';
 }
 
 /**
@@ -96,11 +101,7 @@ function boxOutOfFocus(){
 function addNumberToGrid(){
 
     //the row of the box, and the box itself, gotten by the DOM tree
-    const row = this.parentNode.parentNode;
-    const box = this.parentNode;
-    const num = box.childNodes[1];
-
-    num.innerHTML = this.value;
+    this.nextSibling.textContent = this.value == 0 ? " " : this.value;
 
     //change the box's displayed number based on the selected number from the drop down
     //box.childNodes[1].innerHTML = box.childNodes[0].options[box.childNodes[0].selectedIndex].text;
@@ -150,6 +151,7 @@ function validateSpace(rowIndex, boxIndex, num){
     //check if the inputted number is already in the row
     if (grid[rowIndex].includes(num)){
         //make the other boxes/numbers that share it red
+        alert("The number inputted is already in the row. Please choose a different number.");
     }
     
     //check if the inputted number is already in the column
@@ -160,8 +162,22 @@ function validateSpace(rowIndex, boxIndex, num){
 
 function solveGrid(){
 
+    if (!notValidSodoku){
+        alert("The puzzle you entered is not valid. Please make changes.");
+        return;
+    }
+
     //call solve() from Solve.js and fill up the array
     solve(grid);
+
+    //start filling in the board based on the values in the array
+    const rows = document.querySelectorAll('.row');
+    for (let i = 0; i < 9; i++){
+        for (let j = 0; j < 9; j++){
+            rows[i].childNodes[j].childNodes[0].value = grid[i][j];
+            rows[i].childNodes[j].childNodes[1].innerHTML = grid[i][j];
+        }
+    }
 
 }
 
@@ -173,7 +189,8 @@ function clearBoard(){
     //get all the boxes and have the empty space as their selected options
     const boxes = document.querySelectorAll('.box');
     boxes.forEach(box => {
-        box.firstChild.selectedIndex = 0;
+        box.firstChild.value = 0;
+        box.childNodes[1].innerHTML = ' ';
     });
 
     //get the global grid array and set all values to 0
