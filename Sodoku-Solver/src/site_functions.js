@@ -15,30 +15,27 @@ window.onload = function() {
             const box = document.createElement('div');
             box.classList.add('col-1');
             box.classList.add('p-2');
-            box.classList.add('box');
+            box.classList.add('space');
             row.appendChild(box);
         }
     });
 
     //get all the boxes
-    const boxes = document.querySelectorAll('.box');
+    const boxes = document.querySelectorAll('.space');
 
     //start creating the lists and adding one to each box
     boxes.forEach(box => {
 
         //create the input for each box. Only numbers 0-9
         const list = document.createElement('input');
-        list.type = 'number';
-        list.min = 0;
-        list.max = 9;
-        list.step = 1;
-        list.value = 0;
-        //list.hidden = true;
+        list.type = 'text';
+        list.maxLength = 1;
+        //list.step = 1;
+        list.value = "";
         list.style.display = 'none';
         box.appendChild(list);
         const numParagraph = document.createElement('p');
         numParagraph.textContent = " ";
-        //numParagraph.style.display = 'inline';
         box.appendChild(numParagraph);
 
         //add the event listeners
@@ -68,10 +65,6 @@ const grid = [
     [0,0,0,0,0,0,0,0,0]
 ];
 
-//this number will be used to keep track of how many spaces in the grid have been filled
-let spacesFilled = 0;
-
-//let notValidSodoku = false;
 
 
 /**
@@ -100,12 +93,16 @@ function boxOutOfFocus(){
  * This function will add the space inputted manually to the grid. It will then call checkBoxes afterward.
  */
 function addNumberToGrid(){
+    //make sure to immediately exit if user inputs a non digit or 0
+    if (isNaN(this.value) || this.value == "0"){
+        alert("Your input is not a digit between 1 and 9. Input something else.")
+        return;
+    }
 
     //get the row of the box, and the box itself, gotten by the DOM tree, update the box text
-    this.nextSibling.textContent = this.value == 0 ? " " : this.value;
+    this.nextSibling.textContent = this.value == "" ? " " : this.value;
     const box = this.parentNode;
     const row = box.parentNode;
-
     
     let rowIndex = -1; let boxIndex = -1;
 
@@ -127,11 +124,20 @@ function addNumberToGrid(){
         }
     }
 
-    //update the grid
-    grid[rowIndex][boxIndex] = Number(this.value);
+    //if space is empty, change grid value to 0 and leave
+    if (this.value == ""){
+        grid[rowIndex][boxIndex] = 0;
+        return;
+    }
+    //otherwise call validateSpace before adding the numbr
+    validSudoku = validateSpace(rowIndex, boxIndex, this.value);
 
-    //use validateSpace() to check if entered number is valid
-    //validateSpace(rowIndex, boxIndex, this.value);
+    //update the grid if it doesn't go against the rules
+    if (validSudoku){
+        grid[rowIndex][boxIndex] = Number(this.value);
+    } else { //make the box red
+        box.style.backgroundColor = 'red';
+    }
     
 }
 
@@ -142,25 +148,122 @@ function addNumberToGrid(){
  *  1. Make sure no duplicate numbers are in the same row
  *  2. Make sure no duplicate numbers are in the same column
  *  3. Make sure no duplicate numbers are in the same box
+ * 
+ * If nothing is wrong, function returns true to validateSudoku. Otherwise returns false
  */
-function validateSpace(rowIndex, boxIndex, num){
+function validateSpace(rowIndex, spaceIndex, num){
 
-    //if the user selected the space to be empty, exit the function
-    if (num == 0){
-        return;
-    }
+    const rows = document.querySelectorAll('.row');
+    let validRow = true; let validCol = true; let validBox = true;
+    let alertMessage = "The number you have entered makes an invalid puzzle. The following issues are:\n";
     
     //check if the inputted number is already in the row
-    if (grid[rowIndex].includes(num)){
-        //make the other boxes/numbers that share it red
-        alert("The number inputted is already in the row. Please choose a different number.");
-
+    rows[rowIndex].childNodes.forEach(space => {
+        if (space.firstChild.value == num && space != rows[rowIndex].childNodes[spaceIndex]){
+            space.style.backgroundColor = 'red';
+            validRow = false;
+        }
+    });
+    if (!validRow){
+        alertMessage += "The number inputted is already in the row.\n";
     }
     
     //check if the inputted number is already in the column
-    
+    rows.forEach(row => {
+        if (row.childNodes[spaceIndex].firstChild.value == num && row != rows[rowIndex]){
+            row.childNodes[spaceIndex].style.backgroundColor = 'red';
+            validCol = false;
+        }
+    });
+    if (!validCol){
+        alertMessage += "The number inputted is already in the column.\n";
+    }
 
-    //check if the inputted number is already in the box
+    //find the box the space is part of
+    const subBox = [];
+    if (rowIndex <= 2){
+        if (spaceIndex <= 2){
+            subBox.push(
+                rows[0].childNodes[0], rows[0].childNodes[1], rows[0].childNodes[2],
+                rows[1].childNodes[0], rows[1].childNodes[1], rows[1].childNodes[2],
+                rows[2].childNodes[0], rows[2].childNodes[1], rows[2].childNodes[2]
+            );
+        } else if (spaceIndex >= 6){
+            subBox.push(
+                rows[0].childNodes[6], rows[0].childNodes[7], rows[0].childNodes[8],
+                rows[1].childNodes[6], rows[1].childNodes[7], rows[1].childNodes[8],
+                rows[2].childNodes[6], rows[2].childNodes[7], rows[2].childNodes[8]
+            );
+        } else {
+            subBox.push(
+                rows[0].childNodes[3], rows[0].childNodes[4], rows[0].childNodes[5],
+                rows[1].childNodes[3], rows[1].childNodes[4], rows[1].childNodes[5],
+                rows[2].childNodes[3], rows[2].childNodes[4], rows[2].childNodes[5]
+            );
+        }
+    } else if (rowIndex >= 6){
+        if (spaceIndex <= 2){
+            subBox.push(
+                rows[6].childNodes[0], rows[6].childNodes[1], rows[6].childNodes[2],
+                rows[7].childNodes[0], rows[7].childNodes[1], rows[7].childNodes[2],
+                rows[8].childNodes[0], rows[8].childNodes[1], rows[8].childNodes[2]
+            );
+        } else if (spaceIndex >= 6){
+            subBox.push(
+                rows[6].childNodes[6], rows[6].childNodes[7], rows[6].childNodes[8],
+                rows[7].childNodes[6], rows[7].childNodes[7], rows[7].childNodes[8],
+                rows[8].childNodes[6], rows[8].childNodes[7], rows[8].childNodes[8]
+            );
+        } else {
+            subBox.push(
+                rows[6].childNodes[3], rows[6].childNodes[4], rows[6].childNodes[5],
+                rows[7].childNodes[3], rows[7].childNodes[4], rows[7].childNodes[5],
+                rows[8].childNodes[3], rows[8].childNodes[4], rows[8].childNodes[5]
+            );
+        }
+    } else {
+        if (spaceIndex <= 2){
+            subBox.push(
+                rows[3].childNodes[0], rows[3].childNodes[1], rows[3].childNodes[2],
+                rows[4].childNodes[0], rows[4].childNodes[1], rows[4].childNodes[2],
+                rows[5].childNodes[0], rows[5].childNodes[1], rows[5].childNodes[2]
+            );
+        } else if (spaceIndex >= 6){
+            subBox.push(
+                rows[3].childNodes[6], rows[3].childNodes[7], rows[3].childNodes[8],
+                rows[4].childNodes[6], rows[4].childNodes[7], rows[4].childNodes[8],
+                rows[5].childNodes[6], rows[5].childNodes[7], rows[5].childNodes[8]
+            );
+        } else {
+            subBox.push(
+                rows[3].childNodes[3], rows[3].childNodes[4], rows[3].childNodes[5],
+                rows[4].childNodes[3], rows[4].childNodes[4], rows[4].childNodes[5],
+                rows[5].childNodes[3], rows[5].childNodes[4], rows[5].childNodes[5]
+            );
+        }
+    }
+
+    //check the box to see if we have a duplicate
+    subBox.forEach(space => {
+        if (space.firstChild.value == num && space != rows[rowIndex].childNodes[spaceIndex]){
+            space.style.backgroundColor = 'red';
+            validBox = false;
+        }
+    });
+    if (!validBox){
+        alertMessage += "The number inputted is already within the same box.\n";
+    }
+
+    //return true if nothing is wrong, revert space back to white if everything is correct
+    if (validRow && (validCol && validBox)){
+        rows[rowIndex].childNodes[spaceIndex].style.backgroundColor = 'white';
+        return true;
+    }
+
+    //otherwise send the alert to the user and return false
+    alertMessage += "Please choose a different number.";
+    alert(alertMessage);
+    return false;
 }
 
 
@@ -172,17 +275,25 @@ function validateSpace(rowIndex, boxIndex, num){
  */
 function solveGrid(){
 
-    /*
-    if (!notValidSodoku){
+    //check to see if we have any red spaces. If so, abort the function.
+    let validSudoku = true;
+    const boxes = document.querySelectorAll('.space');
+    boxes.forEach(box => {
+        if (box.style.backgroundColor == 'rgb(255, 0, 0)'){
+            validSudoku = false;
+        }
+    });
+
+    if (!validSudoku){
         alert("The puzzle you entered is not valid. Please make changes.");
         return;
-    } */
+    }
 
     //call solve() from Solve.js and fill up the array
     solve(grid);
 
-    //start filling in the board based on the values in the array
     const rows = document.querySelectorAll('.row');
+    //start filling in the board based on the values in the array
     for (let i = 0; i < 9; i++){
         for (let j = 0; j < 9; j++){
             rows[i].childNodes[j].childNodes[0].value = grid[i][j];
@@ -198,11 +309,12 @@ function solveGrid(){
  */
 function clearBoard(){
 
-    //get all the boxes and have the empty space as their selected options
-    const boxes = document.querySelectorAll('.box');
+    //get all the boxes and have the empty space as their selected options, remove red backgrounds
+    const boxes = document.querySelectorAll('.space');
     boxes.forEach(box => {
         box.firstChild.value = 0;
         box.childNodes[1].innerHTML = ' ';
+        box.style.backgroundColor = 'white';
     });
 
     //get the global grid array and set all values to 0
