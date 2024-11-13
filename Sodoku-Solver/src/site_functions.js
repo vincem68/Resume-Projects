@@ -135,10 +135,7 @@ function addNumberToGrid(){
     //update the grid if it doesn't go against the rules
     if (validSudoku){
         grid[rowIndex][boxIndex] = Number(this.value);
-    } else { //make the box red
-        box.style.backgroundColor = 'red';
     }
-    
 }
 
 /**
@@ -261,8 +258,10 @@ function validateSpace(rowIndex, spaceIndex, num){
     }
 
     //otherwise send the alert to the user and return false
+
     alertMessage += "Please choose a different number.";
     alert(alertMessage);
+    rows[rowIndex].childNodes[spaceIndex].style.backgroundColor = 'red';
     return false;
 }
 
