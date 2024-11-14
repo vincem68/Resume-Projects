@@ -104,6 +104,7 @@ function addNumberToGrid(){
     const box = this.parentNode;
     const row = box.parentNode;
     
+    //indexes of where the space would be in the grid
     let rowIndex = -1; let boxIndex = -1;
 
     const rowsList = document.querySelectorAll('.row');
@@ -124,18 +125,11 @@ function addNumberToGrid(){
         }
     }
 
-    //if space is empty, change grid value to 0 and leave
-    if (this.value == ""){
-        grid[rowIndex][boxIndex] = 0;
-        return;
-    }
-    //otherwise call validateSpace before adding the numbr
-    validSudoku = validateSpace(rowIndex, boxIndex, this.value);
+    //call validateSpace before adding the number
+    validateSpace(rowIndex, boxIndex, this.value, grid[rowIndex][boxIndex].toString());
 
-    //update the grid if it doesn't go against the rules
-    if (validSudoku){
-        grid[rowIndex][boxIndex] = Number(this.value);
-    }
+    //update the grid
+    grid[rowIndex][boxIndex] = Number(this.value);
 }
 
 /**
@@ -148,35 +142,68 @@ function addNumberToGrid(){
  * 
  * If nothing is wrong, function returns true to validateSudoku. Otherwise returns false
  */
-function validateSpace(rowIndex, spaceIndex, num){
+function validateSpace(rowIndex, spaceIndex, num, prevNum){
+
+    //if user made space empty make it 0 here
+    if (num == ""){
+        num = "0";
+    }
 
     const rows = document.querySelectorAll('.row');
-    let validRow = true; let validCol = true; let validBox = true;
+
+    //declare booleans to use to let us know what to say in alert if user input is invalid.
+    //prevDupNums is used to get any red spaces not the current space that contain the previous value of
+    //the current space. Use it to make those spaces white if they are now the only kind of a number left
+    //in a row, col or box
+    let validRow = true; let validCol = true; let validBox = true; let prevDupNums = [];
     let alertMessage = "The number you have entered makes an invalid puzzle. The following issues are:\n";
     
     //check if the inputted number is already in the row
     rows[rowIndex].childNodes.forEach(space => {
-        if (space.firstChild.value == num && space != rows[rowIndex].childNodes[spaceIndex]){
-            space.style.backgroundColor = 'red';
-            validRow = false;
+        if (num != "0"){
+            if (space.firstChild.value == num && space != rows[rowIndex].childNodes[spaceIndex]){
+                space.style.backgroundColor = 'red';
+                validRow = false;
+            }
+        }
+        if (prevNum != "0"){
+            if (space.firstChild.value == prevNum && space != rows[rowIndex].childNodes[spaceIndex]){
+                prevDupNums.push(space);
+            }
         }
     });
     if (!validRow){
         alertMessage += "The number inputted is already in the row.\n";
     }
+    if (prevDupNums.length == 1){
+        prevDupNums[0].style.backgroundColor = 'white';
+    }
+    prevDupNums = [];
     
     //check if the inputted number is already in the column
     rows.forEach(row => {
-        if (row.childNodes[spaceIndex].firstChild.value == num && row != rows[rowIndex]){
-            row.childNodes[spaceIndex].style.backgroundColor = 'red';
-            validCol = false;
+        if (num != "0"){
+            if (row.childNodes[spaceIndex].firstChild.value == num && row != rows[rowIndex]){
+                row.childNodes[spaceIndex].style.backgroundColor = 'red';
+                validCol = false;
+            }
+        }
+        if (prevNum != "0"){
+            if (row.childNodes[spaceIndex].firstChild.value == prevNum && row != rows[rowIndex]){
+                prevDupNums.push(row.childNodes[spaceIndex]);
+            }
         }
     });
     if (!validCol){
         alertMessage += "The number inputted is already in the column.\n";
     }
+    if (prevDupNums.length == 1){
+        prevDupNums[0].style.backgroundColor = 'white';
+    }
+    prevDupNums = [];
+    
 
-    //find the box the space is part of
+    //add all spaces the current space is part of
     const subBox = [];
     if (rowIndex <= 2){
         if (spaceIndex <= 2){
@@ -242,27 +269,35 @@ function validateSpace(rowIndex, spaceIndex, num){
 
     //check the box to see if we have a duplicate
     subBox.forEach(space => {
-        if (space.firstChild.value == num && space != rows[rowIndex].childNodes[spaceIndex]){
-            space.style.backgroundColor = 'red';
-            validBox = false;
+        if (num != "0"){
+            if (space.firstChild.value == num && space != rows[rowIndex].childNodes[spaceIndex]){
+                space.style.backgroundColor = 'red';
+                validBox = false;
+            }
+        }
+        if (prevNum != "0"){
+            if (space.firstChild.value == prevNum && space != rows[rowIndex].childNodes[spaceIndex]){
+                prevDupNums.push(space);
+            }
         }
     });
     if (!validBox){
         alertMessage += "The number inputted is already within the same box.\n";
     }
+    if (prevDupNums.length == 1){
+        prevDupNums[0].style.backgroundColor = 'white';
+    }
 
     //return true if nothing is wrong, revert space back to white if everything is correct
     if (validRow && (validCol && validBox)){
         rows[rowIndex].childNodes[spaceIndex].style.backgroundColor = 'white';
-        return true;
+        return;
     }
 
-    //otherwise send the alert to the user and return false
-
+    //otherwise send the alert to the user, make space red
     alertMessage += "Please choose a different number.";
     alert(alertMessage);
     rows[rowIndex].childNodes[spaceIndex].style.backgroundColor = 'red';
-    return false;
 }
 
 
