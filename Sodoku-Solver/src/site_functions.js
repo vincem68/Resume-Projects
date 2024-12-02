@@ -13,7 +13,7 @@ window.onload = function() {
     rows.forEach(row => {
         for (let i = 0; i < 9; i++){
             const box = document.createElement('div');
-            box.classList.add('col-1');
+            box.classList.add('col-med-1');
             box.classList.add('p-2');
             box.classList.add('space');
             row.appendChild(box);
