@@ -51,9 +51,10 @@ window.onload = function() {
  */
 document.getElementById('resetButton').addEventListener('click', clearBoard);
 document.getElementById('solveButton').addEventListener('click', solveGrid);
+document.getElementById('genButton').addEventListener('click', generateBoard);
 
 //a global object that represents the sodoku grid. Initially starts out with all empty spaces
-const grid = [
+let grid = [
     [0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0],
@@ -335,6 +336,28 @@ function solveGrid(){
         }
     }
 
+}
+
+async function generateBoard(){
+
+    document.querySelectorAll('.space').forEach(space => {
+        space.style.backgroundColor = 'white';
+    });
+
+    //connect to the sudoko api
+    const response = await fetch("https://sudoku-api.vercel.app/api/dosuku?query={newboard(limit:1){grids{value}}}");
+    const board = await response.json();
+    //swap out the current grid with the new one
+    grid = board.newboard.grids[0].value;
+
+    //change the text values on the viewable grid
+    const rows = document.querySelectorAll('.row');
+    for (let i = 0; i < 9; i++){
+        for (let j = 0; j < 9; j++){
+            rows[i].childNodes[j].childNodes[0].value = grid[i][j];
+            rows[i].childNodes[j].childNodes[1].textContent = (grid[i][j] == 0) ? " " : grid[i][j];
+        }
+    }
 }
 
 /**

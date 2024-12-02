@@ -16,11 +16,10 @@
     margin: 0;
 }
 
-input {
+input[type=text]{
     height: 100%;
     width: 100%;
 }
-
 
 .horizontal {
     border-bottom-width: 50px;
