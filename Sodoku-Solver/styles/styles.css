@@ -21,6 +21,13 @@ input[type=text]{
     width: 100%;
 }
 
+input[type=button] {
+    font-style: italic;
+    background-color:aqua;
+    margin-left: 30px;
+    margin-bottom: 20px;
+}
+
 .horizontal {
     border-bottom-width: 50px;
     border-bottom-color: black;
@@ -37,4 +44,8 @@ input[type=text]{
     color: black;
     padding-left: 35%;
     font-size: 20px;
+}
+
+#buttonDiv {
+    margin: 20px;
 }
