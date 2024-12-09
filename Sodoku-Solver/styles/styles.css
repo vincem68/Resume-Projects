@@ -3,7 +3,8 @@
 }
 
 .container {
-    align-self: center;
+    justify-content: center;
+    justify-self: center;
 }
 
 .space {
